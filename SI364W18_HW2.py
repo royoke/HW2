@@ -11,7 +11,9 @@
 #############################
 ##### IMPORT STATEMENTS #####
 #############################
-from flask import Flask, request, render_template, url_for
+import requests
+import json
+from flask import Flask, request, render_template, url_for, redirect, flash
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, RadioField, ValidationError
 from wtforms.validators import Required
@@ -42,6 +44,49 @@ def hello_world():
 @app.route('/user/<name>')
 def hello_user(name):
     return '<h1>Hello {0}<h1>'.format(name)
+
+@app.route('/artistform', methods = ['GET','POST'])
+def artist_form():
+	return render_template('artistform.html')
+
+@app.route('/artistinfo', methods = ['GET','POST'])
+def artist_info():
+	artist = request.args['artist']
+	if artist != '':
+		baseURL = 'https://itunes.apple.com/search?'
+		params = {}
+		params['media'] = 'music'
+		params['entity'] = 'musicTrack'
+		params['term'] = artist
+		data = requests.get(baseURL, params=params)
+		artist_dict = json.loads(data.text)
+		return render_template('artist_info.html', objects=artist_dict['results'])
+	flash('An artist name is required!')
+	return redirect(url_for('artist_form'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == '__main__':

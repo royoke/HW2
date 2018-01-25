@@ -2,6 +2,9 @@
 <body>
 
 <form action="http://localhost:5000/artistinfo" method="GET">
+  {% for message in get_flashed_messages() %}
+  {{ message }} <br>
+  {% endfor %}
   Artist to search for:<br>
   <input type="text" name="artist" value="">
   <br><br>
