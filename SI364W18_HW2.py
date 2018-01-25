@@ -64,6 +64,22 @@ def artist_info():
 	flash('An artist name is required!')
 	return redirect(url_for('artist_form'))
 
+@app.route('/artistlinks')
+def artist_links():
+	return render_template('artist_links.html')
+
+@app.route('/specific/song/<artist_name>', methods = ['GET','POST'])
+def specific_artists(artist_name):
+	baseURL = 'https://itunes.apple.com/search?'
+	params = {}
+	params['media'] = 'music'
+	params['entity'] = 'musicTrack'
+	params['term'] = artist_name
+	data = requests.get(baseURL, params=params)
+	artist_dict = json.loads(data.text)
+	return render_template('specific_artist.html', results=artist_dict['results'])
+
+
 
 
 
