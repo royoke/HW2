@@ -28,9 +28,10 @@ app.config['SECRET_KEY'] = 'hardtoguessstring'
 ####################
 ###### FORMS #######
 ####################
-
-
-
+class AlbumEntryForm(FlaskForm):
+	album_name = StringField('Enter the name of an album: ', validators=[Required()])
+	rating = RadioField('How much do you like the album? (1 low, 3 high)', choices=[('1','1'),('2','2'),('3','3')], validators=[Required()])
+	submit = SubmitField('Submit')
 
 ####################
 ###### ROUTES ######
@@ -79,29 +80,20 @@ def specific_artists(artist_name):
 	artist_dict = json.loads(data.text)
 	return render_template('specific_artist.html', results=artist_dict['results'])
 
+@app.route('/album_entry')
+def album_entry():
+	form = AlbumEntryForm()
+	return render_template('album_entry.html', form=form) 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route('/album_data', methods=['POST','GET'])
+def album_data():
+	form = AlbumEntryForm(request.form)
+	if request.method=='POST' and form.validate_on_submit():
+		album_name = form.album_name.data
+		rating = form.rating.data
+		return render_template('album_data.html',album_name=album_name,rating=rating)
+	flash('All fields are required!')
+	return redirect(url_for('album_entry'))
 
 
 
