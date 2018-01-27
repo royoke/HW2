@@ -91,7 +91,14 @@ def album_data():
 	if request.method=='POST' and form.validate_on_submit():
 		album_name = form.album_name.data
 		rating = form.rating.data
-		return render_template('album_data.html',album_name=album_name,rating=rating)
+		baseURL = 'https://itunes.apple.com/search?'
+		params = {}
+		params['media'] = 'music'
+		params['entity'] = 'album'
+		params['term'] = album_name
+		data = requests.get(baseURL, params=params)
+		album_dict = json.loads(data.text)
+		return render_template('album_data.html',album_name=album_name,rating=rating,album_dict=album_dict['results'][0])
 	flash('All fields are required!')
 	return redirect(url_for('album_entry'))
 
